@@ -4,18 +4,15 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from keyboards import start_keyboards, contact_keyboard, shaharlar_kb, oyliklar_kb
+from keyboards import start_keyboards, contact_keyboard, shaharlar_kb, oyliklar_kb, ruxsat_uchun
 from states import DataState
-from config import ADMIN_CHAT_ID
-
-
-from config import MY_TOKEN
+from config import ADMIN_CHAT_ID, CHANNEL_ID, MY_TOKEN
 
 API_TOKEN = MY_TOKEN 
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=API_TOKEN, proxy='http://proxy.server:3128')
+bot = Bot(token=API_TOKEN)
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -132,14 +129,23 @@ async def ha_yoq(message: types.Message, state: DataState):
     if message.text.lower() == "ha":
         all_data = await state.get_data()
         global malumotlar
-        await bot.send_message(chat_id=ADMIN_CHAT_ID, text=malumotlar)
         await message.answer(text="✅ Arizangiz Adminga yuborildi.")
+        await bot.send_message(chat_id=ADMIN_CHAT_ID, text=malumotlar, reply_markup=ruxsat_uchun)
     else:
         await message.answer(text="❌ Arizangiz bekor qilindi.")
     await state.finish()
 
 
-
+@dp.callback_query_handler()
+async def admin_confirm(call: types.CallbackQuery):
+    admin = call.data
+    global malumotlar
+    if admin == 'yoq':
+        malumotlar = ''
+        await bot.send_message(chat_id=ADMIN_CHAT_ID, text="Ariza o'chirildi")
+        # await bot.send_message(chat_id=user_id)
+    elif admin == 'ha':
+        await bot.send_message(chat_id=CHANNEL_ID, text=malumotlar)  # malumotlarga qo'shib texnologiya heshteglari
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

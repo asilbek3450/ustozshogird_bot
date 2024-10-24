@@ -45,3 +45,11 @@ oyliklar_kb = types.InlineKeyboardMarkup(inline_keyboard=[
         types.InlineKeyboardButton(text="1000$+", callback_data="1000$+")
     ]
 ])
+
+
+ruxsat_uchun = types.InlineKeyboardMarkup(inline_keyboard=[
+    [
+        types.InlineKeyboardButton(text="RUXSAT Yo'q ❌", callback_data="yoq"),
+        types.InlineKeyboardButton(text="RUXSAT Bor ✅", callback_data="ha")
+    ]
+])
